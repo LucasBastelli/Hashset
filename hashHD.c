@@ -186,22 +186,29 @@ int search(int val,FILE *arqHASH)
 
 int set_size(FILE *arqHASH){
   int size = 0, posi = 0;
-  unsigned int i;
+  int i=0;
   node test;
   rewind(arqHASH);
-  for (i = 0; i < NB_BUCKETS; i++) {
+  #ifdef DEBUG
+  printf("Tamanho Total %ld\n",NB_BUCKETS);
+  #endif
+  while(i<NB_BUCKETS){
     fseek(arqHASH,i*sizeof(node),SEEK_SET);
     fread(&test, sizeof(node), 1, arqHASH);
     if(test.val!=-1){
+      size++;
       while(test.next!=-1){
         fseek(arqHASH,test.next,SEEK_SET);
         fread(&test, sizeof(node), 1, arqHASH);
         size++;
       }
-      size++;
     }
     i++;
   }
+  #ifdef DEBUG
+  printf("Percorrido %d\n",i);
+  printf("Contabilizado %d\n",size);
+  #endif
   return size;
 }
 
@@ -311,25 +318,29 @@ int main(){
         set_new(arqHASH);
     }
     do{
+    #ifdef DEBUG
 		printf("Digite a opcao:\nAdd-->1\nRemove-->2\nSearch-->3\nStress Test-->4\nTest Program-->5\nExit-->6\n");
-		scanf("%d",&opc);
+    scanf("%d",&opc);
+    #else
+    opc=4;
+    #endif
 		switch(opc)
 		{
-			case 1:
+      case 1:
         printf("Enter an integer: ");
         scanf("%d", &num);
         if(add(num,arqHASH))
           printf("Add\n");
         else printf("not found\n");
         break;
-			case 2:
+      case 2:
         printf("Enter an integer: ");
         scanf("%d", &num);
         if(delete(num,arqHASH))
           printf("Deleted\n");
         else printf("not found\n");
         break;
-			case 3:
+      case 3:
         printf("Enter an integer: ");
         scanf("%d", &num);
         if(search(num,arqHASH)){
@@ -368,6 +379,10 @@ int main(){
         printf("#txs          : %lu (%f / s)\n", reads + updates, ((reads + updates)*1.0  / 5));
         printf("#read txs     : %lu (%f / s)\n", reads, (reads *1.0 / 5));
         printf("#update txs   : %lu (%f / s)\n", updates, (updates *1.0 / 5));
+        #ifndef DEBUG
+        remove("Hash.bin");
+        exit(0);
+        #endif
         set_new(arqHASH);
         break;
       case 5:
@@ -395,6 +410,7 @@ int main(){
           }
           i++;
         }
+        printf("Size: %d\n",set_size(arqHASH));
         break;
 			case 6:
 				fclose(arqHASH);
