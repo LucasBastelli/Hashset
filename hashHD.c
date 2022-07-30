@@ -412,9 +412,9 @@ int main(){
         }
         printf("Size: %d\n",set_size(arqHASH));
         break;
-			case 6:
-				fclose(arqHASH);
-				exit(0);				
+      case 6:
+        fclose(arqHASH);
+        exit(0);				
 		}
     }while(1);
 
