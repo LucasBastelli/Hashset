@@ -1,38 +1,15 @@
-# SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2015-2016, Intel Corporation
+PROGRAMS = hashHD hashHD-DB
 
-#
-#
+CC = gcc
 
-PROGS = hashHD
+all:	$(PROGRAMS)
 
-LIBS = -pthread
+hashHD:	hashHD.c
+	gcc -o hash hashHD.c -pthread
 
-LINKER=$(CC)
-ifeq ($(COMPILE_LANG), cpp)
-LINKER=$(CXX)
-endif
-
-
-MAKEFILE_DEPS=Makefile
-
-all: $(PROGS)
-
-%.o: %.c $(MAKEFILE_DEPS)
-	$(call check-cstyle, $<)
-	$(CC) -c -o $@ $(CFLAGS) $(INCS) $<
-
-%.o: %.cpp $(MAKEFILE_DEPS)
-	$(call check-cstyle, $<)
-	$(CXX) -c -o $@ $(CXXFLAGS) $(INCS) $<
-
-$(PROGS):
-	$(LINKER) -o $@ $^ $(LDFLAGS) $(LIBS)
-
-
-hashHD: hashHD.o
+hashHD-DB:
+	gcc -o hash-DB hashHD.c -pthread -DDEBUG
 
 
 clean:
-	rm -f $(PROGS)
-	rm -f *.o
+	rm -f $(PROGRAMS) *.o
