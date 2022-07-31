@@ -305,6 +305,7 @@ int main(){
     data[0].range = 65536;
     data[0].update = 50;
     data[0].alternate = 1;
+    int duration = 10; //secs
     rand_init(data[0].seed);
     
     //
@@ -324,8 +325,8 @@ int main(){
     #else
     opc=4;
     #endif
-		switch(opc)
-		{
+    switch(opc)
+    {
       case 1:
         printf("Enter an integer: ");
         scanf("%d", &num);
@@ -356,14 +357,13 @@ int main(){
             }
         }
         int size = set_size(arqHASH);
-        printf("Set size: %d\t Expected: %d\n",size, i);
         fclose(arqHASH);
         printf("STARTING...\n");
         if (pthread_create(&threads, NULL, test, &data[0]) != 0) {
             fprintf(stderr, "Error creating thread\n");
             exit(1);
         }
-        sleep(10);
+        sleep(duration);
         stop = 1;
         printf("STOPPING...\n");
         pthread_join(threads, NULL);
@@ -371,14 +371,19 @@ int main(){
         long unsigned int updates = (data[0].nb_add + data[0].nb_remove);
         size+=data[0].diff;
         arqHASH = fopen("Hash.bin", "r+b");
+        printf("Duration     : %d seconds\n", duration);
+        printf("Initial size : %d\n", i);
+        printf("Value range  : %d\n", data[0].range);
+        printf("Update rate  : %d\n", data[0].update);
+        printf("Alternate    : %d\n", data[0].alternate);
         printf("  #add        : %lu\n", data[0].nb_add);
         printf("  #remove     : %lu\n", data[0].nb_remove);
         printf("  #contains   : %lu\n", data[0].nb_contains);
         printf("  #found      : %lu\n", data[0].nb_found);
         printf("Set size      : %d (expected: %d)\n", set_size(arqHASH), size);
-        printf("#txs          : %lu (%f / s)\n", reads + updates, ((reads + updates)*1.0  / 5));
-        printf("#read txs     : %lu (%f / s)\n", reads, (reads *1.0 / 5));
-        printf("#update txs   : %lu (%f / s)\n", updates, (updates *1.0 / 5));
+        printf("#txs          : %lu (%f / s)\n", reads + updates, ((reads + updates)*1.0  / duration));
+        printf("#read txs     : %lu (%f / s)\n", reads, (reads *1.0 / duration));
+        printf("#update txs   : %lu (%f / s)\n", updates, (updates *1.0 / duration));
         #ifndef DEBUG
         remove("Hash.bin");
         exit(0);
@@ -415,7 +420,7 @@ int main(){
       case 6:
         fclose(arqHASH);
         exit(0);				
-		}
+    }
     }while(1);
 
 }
